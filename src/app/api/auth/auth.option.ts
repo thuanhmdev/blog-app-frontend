@@ -11,7 +11,7 @@ const refreshAccessToken = async (token: JWT) => {
   const { statusCode, message, error, data } = await sendRequest<
     TResponse<TResponseUserLogin>
   >({
-    url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/admin/auth/refresh`,
+    url: `/api/v1/admin/auth/refresh`,
     method: "POST",
     body: { refreshToken: token?.refreshToken },
   });
@@ -47,7 +47,7 @@ export const authOptions: AuthOptions = {
       async authorize(credentials, req) {
         // Add logic here to look up the user from the credentials supplied
         const res = await sendRequest<TResponse<JWT>>({
-          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/admin/auth/login`,
+          url: `/api/v1/admin/auth/login`,
           method: "POST",
           body: {
             username: credentials?.username,
@@ -79,7 +79,7 @@ export const authOptions: AuthOptions = {
     async jwt({ token, trigger, account, user, session }) {
       if (trigger === "signIn" && account?.provider !== "credentials") {
         const res = await sendRequest<TResponse<TResponseUserLogin>>({
-          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/social-media`,
+          url: `/api/v1/auth/social-media`,
           method: "POST",
           body: {
             provider: account?.provider?.toLocaleUpperCase(),

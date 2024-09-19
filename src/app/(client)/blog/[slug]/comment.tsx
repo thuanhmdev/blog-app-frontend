@@ -21,7 +21,7 @@ const Comment = ({ blogId }: { blogId: string }) => {
   const handleGetComments = async () => {
     if (!blogId) return;
     const { statusCode, data } = await sendRequest<TResponse<TComment[]>>({
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blogs/comments/${blogId}`,
+      url: `/api/v1/blogs/comments/${blogId}`,
       method: "GET",
     });
     console.log(data);
@@ -51,7 +51,7 @@ const Comment = ({ blogId }: { blogId: string }) => {
     if (!content) return;
 
     const { statusCode, data } = await sendRequest<TResponse<TComment[]>>({
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blogs/comments`,
+      url: `/api/v1/blogs/comments`,
       method: "POST",
       body: {
         content: content,

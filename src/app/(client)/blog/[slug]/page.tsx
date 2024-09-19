@@ -19,7 +19,7 @@ interface TProps {
 //   parent: ResolvingMetadata
 // ): Promise<Metadata> {
 //   const { statusCode, data } = await sendRequest<TResponse<TBlog>>({
-//     url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blogs/${getIdFromSlug(
+//     url: `/api/v1/blogs/${getIdFromSlug(
 //       params.slug
 //     )}}`,
 //     method: "GET",
@@ -77,13 +77,11 @@ interface TProps {
 const page = async ({ params }: any) => {
   const [blog, topBlogs] = await Promise.all([
     sendRequest<TResponse<TBlog>>({
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blogs/${getIdFromSlug(
-        params.slug
-      )}`,
+      url: `/api/v1/blogs/${getIdFromSlug(params.slug)}`,
       method: "GET",
     }),
     sendRequest<TResponse<TBlog[]>>({
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blogs/recent`,
+      url: `/api/v1/blogs/recent`,
       method: "GET",
     }),
   ]);

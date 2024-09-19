@@ -19,7 +19,7 @@ const SettingForm = () => {
 
   const fetchSettingData = async () => {
     const result = await sendRequest<TResponse<TSetting>>({
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/settings`,
+      url: `/api/v1/settings`,
       method: "GET",
       headers: {
         Authorization: `Bearer ${session?.accessToken}`,
@@ -93,7 +93,7 @@ const SettingForm = () => {
 
     const response = await axios({
       method: "PUT",
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/settings`,
+      url: `/api/v1/settings`,
       data: formData,
       headers: {
         "Content-Type": "multipart/form-data",

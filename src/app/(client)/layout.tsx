@@ -7,7 +7,7 @@ import AuthUser from "./auth-user";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data, statusCode } = await sendRequest<TResponse<TSetting>>({
-    url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/settings`,
+    url: `/api/v1/settings`,
     method: "GET",
   });
   if (statusCode === 200) {

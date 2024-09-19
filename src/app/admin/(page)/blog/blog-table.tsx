@@ -41,7 +41,7 @@ function BlogTable() {
   const handleFetchBlog = async () => {
     if (session?.accessToken) {
       const result = await sendRequest<TResponse<TBlog[]>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blogs/all`,
+        url: `/api/v1/blogs/all`,
         method: "GET",
       });
       if (result.statusCode <= 299 && result.data) {
@@ -65,7 +65,7 @@ function BlogTable() {
 
   const handleAcceptDelete = async () => {
     const result = await sendRequest<any>({
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/admin/blogs/${rowId}`,
+      url: `/api/v1/admin/blogs/${rowId}`,
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${session?.accessToken}`,

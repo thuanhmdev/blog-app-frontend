@@ -18,11 +18,11 @@ const HomePage = async ({
   const session = await getServerSession(authOptions);
   const [topBlogs, blogs, contact] = await Promise.all([
     sendRequest<TResponse<TBlog[]>>({
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blogs/carousel`,
+      url: `/api/v1/blogs/carousel`,
       method: "GET",
     }),
     sendRequest<TResponse<TPagination<TBlog[]>>>({
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blogs-pagination`,
+      url: `/api/v1/blogs-pagination`,
       method: "GET",
       queryParams: {
         size: 10,
@@ -30,7 +30,7 @@ const HomePage = async ({
       },
     }),
     sendRequest<TResponse<TContact>>({
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/settings/contact`,
+      url: `/api/v1/settings/contact`,
       method: "GET",
     }),
   ]);

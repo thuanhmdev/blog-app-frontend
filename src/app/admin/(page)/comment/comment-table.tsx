@@ -37,9 +37,9 @@ function CommentTable() {
   });
 
   const handleFetchComment = async () => {
-    let url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blogs/comments`;
+    let url = `/api/v1/blogs/comments`;
     if (id) {
-      url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blogs/comments/${id}`;
+      url = `/api/v1/blogs/comments/${id}`;
     }
     const result = await sendRequest<TResponse<TComment[]>>({
       url: url,
@@ -66,7 +66,7 @@ function CommentTable() {
 
   const handleAcceptDelete = async () => {
     const result = await sendRequest<any>({
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blogs/comments/${rowId}`,
+      url: `/api/v1/blogs/comments/${rowId}`,
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${session?.accessToken}`,

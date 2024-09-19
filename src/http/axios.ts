@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_ENPOINT,
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
@@ -22,13 +22,9 @@ export const apiCreateDataWithFile = async <T>(
   }
 
   try {
-    const response = await axiosInstance.post(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/${url}`,
-      data,
-      {
-        headers,
-      }
-    );
+    const response = await axiosInstance.post(`/${url}`, data, {
+      headers,
+    });
 
     return response.data;
   } catch (error) {
@@ -53,7 +49,7 @@ export const apiCreateUpdateDataWithFile = async <T>(
   try {
     const response = await axiosInstance({
       method: method,
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/${url}`,
+      url: `/${url}`,
       data: data,
       headers: headers,
     });

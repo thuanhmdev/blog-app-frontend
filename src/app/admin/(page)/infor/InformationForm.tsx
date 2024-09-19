@@ -18,7 +18,7 @@ const InformationAdd = () => {
 
   const fetchUserById = async () => {
     const result = await sendRequest<TResponse<TUser>>({
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/${session?.user.id}`,
+      url: `/api/v1/users/${session?.user.id}`,
       method: "GET",
       headers: {
         Authorization: `Bearer ${session?.accessToken}`,
@@ -67,7 +67,7 @@ const InformationAdd = () => {
 
     const response = await axios({
       method: "PUT",
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users`,
+      url: `/api/v1/users`,
       data: formData,
       headers: {
         "Content-Type": "multipart/form-data",

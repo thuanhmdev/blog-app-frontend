@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const Header = async () => {
   const setting = await sendRequest<TResponse<TSetting>>({
-    url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/settings`,
+    url: `/api/v1/settings`,
     method: "GET",
   });
   return (

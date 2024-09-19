@@ -22,7 +22,9 @@ export const sendRequest = async <T>(props: TRequest) => {
   if (useCredentials) options.credentials = "include";
 
   if (queryParams) {
-    url = `${url}?${queryString.stringify(queryParams)}`;
+    url = `${process.env.NEXT_PUBLIC_BACKEND_URL}${url}?${queryString.stringify(
+      queryParams
+    )}`;
   }
 
   return fetch(url, options).then((res) => {

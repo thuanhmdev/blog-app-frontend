@@ -9,7 +9,7 @@ const AuthUser = () => {
   useEffect(() => {
     if (session?.error === "UserRefreshAccessTokenError") {
       sendRequest<TResponse<TBlog[]>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/logout`,
+        url: `/api/v1/auth/logout`,
         method: "GET",
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,

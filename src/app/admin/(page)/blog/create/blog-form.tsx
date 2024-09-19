@@ -31,7 +31,7 @@ const BlogForm = ({ id }: IProps) => {
     if (id && session) {
       const fetchDataBlog = async (id: string) => {
         const result = await sendRequest<TResponse<TBlog>>({
-          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/blogs/${id}`,
+          url: `/api/v1/blogs/${id}`,
           method: "GET",
         });
         if (result.statusCode === 200) {
@@ -108,7 +108,7 @@ const BlogForm = ({ id }: IProps) => {
 
     const response = await axios({
       method: values?.id ? "put" : "post",
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/admin/blogs`,
+      url: `/api/v1/admin/blogs`,
       data: formData,
       headers: {
         "Content-Type": "multipart/form-data",
