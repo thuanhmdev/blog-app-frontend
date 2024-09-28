@@ -6,12 +6,23 @@ const nextConfig = {
         protocol: "http",
         hostname: "localhost",
         port: "8080",
-        pathname: "/storage/**",
+        pathname: "/**",
       },
+      {
+        protocol: "http",
+        hostname: "host.docker.internal",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        pathname: "/**",
+      },
+    
     ],
   },
-  distDir: "build",
   reactStrictMode: false,
+
 };
 
 export default nextConfig;

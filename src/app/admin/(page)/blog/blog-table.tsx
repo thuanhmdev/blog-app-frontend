@@ -41,8 +41,9 @@ function BlogTable() {
   const handleFetchBlog = async () => {
     if (session?.accessToken) {
       const result = await sendRequest<TResponse<TBlog[]>>({
-        url: `/api/v1/blogs/all`,
+        url: `/blog-api/blogs`,
         method: "GET",
+        typeComponent: "CSR",
       });
       if (result.statusCode <= 299 && result.data) {
         setBlogs(result.data);
@@ -65,11 +66,12 @@ function BlogTable() {
 
   const handleAcceptDelete = async () => {
     const result = await sendRequest<any>({
-      url: `/api/v1/admin/blogs/${rowId}`,
+      url: `/blog-api/blogs/${rowId}`,
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${session?.accessToken}`,
       },
+      typeComponent: "CSR",
     });
 
     if (result.statusCode <= 299) {

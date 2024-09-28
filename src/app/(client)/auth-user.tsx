@@ -7,15 +7,16 @@ const AuthUser = () => {
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (session?.error === "UserRefreshAccessTokenError") {
-      sendRequest<TResponse<TBlog[]>>({
-        url: `/api/v1/auth/logout`,
+    if (session?.error === "refreshAccessTokenError") {
+      sendRequest<void>({
+        url: `/blog-api/auth/logout`,
         method: "GET",
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
         },
+        typeComponent: "CSR",
       });
-      signOut();
+      signOut({ callbackUrl: "" });
     }
   }, [session?.error]);
 

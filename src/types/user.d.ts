@@ -9,9 +9,11 @@ declare global {
     name: string;
     username: string;
     gender: string;
-    typeRole: string;
+    role: {
+      id: string;
+      name: string;
+    };
     picture: string;
-    email?: string;
   };
 
   export type TLogin = {

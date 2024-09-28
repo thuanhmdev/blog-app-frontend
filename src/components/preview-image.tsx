@@ -42,6 +42,7 @@ const PreviewImage = ({ url = "" }: { url: string }) => {
       {!!urlPreview && (
         <>
           <Image src={urlPreview} alt="blog" width={200} height={200} />
+
           <div>
             <button
               type="button"

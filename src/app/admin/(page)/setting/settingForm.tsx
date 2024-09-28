@@ -10,7 +10,6 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { z } from "zod";
-import PreviewImage from "@/components/preview-image";
 import Loading from "@/components/loading";
 
 const SettingForm = () => {
@@ -19,16 +18,16 @@ const SettingForm = () => {
 
   const fetchSettingData = async () => {
     const result = await sendRequest<TResponse<TSetting>>({
-      url: `/api/v1/settings`,
+      url: `/blog-api/settings`,
       method: "GET",
       headers: {
         Authorization: `Bearer ${session?.accessToken}`,
       },
+      typeComponent: "CSR",
     });
 
     if (result.statusCode === 200) {
       form.setValue("title", result.data.title);
-      form.setValue("logo", result.data.logo ?? "");
       form.setValue("siteName", result.data.siteName ?? "");
       form.setValue("email", result.data.email ?? "");
       form.setValue("description", result.data?.description ?? "");
@@ -36,7 +35,10 @@ const SettingForm = () => {
       form.setValue("messengerLink", result.data?.messengerLink ?? "");
       form.setValue("xLink", result.data?.xLink ?? "");
       form.setValue("instagramLink", result.data?.instagramLink ?? "");
-      form.setValue("zaloLink", result.data?.zaloLink ?? "");
+      form.setValue(
+        "fanpageFacebookLink",
+        result.data?.fanpageFacebookLink ?? ""
+      );
     }
     setLoading(false);
   };
@@ -50,14 +52,12 @@ const SettingForm = () => {
     title: z.string().min(1, { message: "This field is required" }),
     description: z.string(),
     email: z.string().email().min(1, { message: "This field is required" }),
-    logo: z.string(),
     siteName: z.string(),
     facebookLink: z.string(),
     messengerLink: z.string(),
     xLink: z.string(),
     instagramLink: z.string(),
-    zaloLink: z.string(),
-    file: z.any().optional(),
+    fanpageFacebookLink: z.string(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -67,40 +67,25 @@ const SettingForm = () => {
       description: "",
       email: "",
       siteName: "",
-      logo: "",
       facebookLink: "",
       messengerLink: "",
       xLink: "",
       instagramLink: "",
-      zaloLink: "",
-      file: null,
+      fanpageFacebookLink: "",
     },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const formData = new FormData();
-    formData.append("title", values.title);
-    formData.append("description", values.description ?? "");
-    formData.append("email", values.email ?? "");
-    formData.append("siteName", values.description ?? "");
-    formData.append("logo", values.logo);
-    formData.append("facebookLink", values.facebookLink);
-    formData.append("messengerLink", values.messengerLink);
-    formData.append("xLink", values.xLink);
-    formData.append("instagramLink", values.instagramLink);
-    formData.append("zaloLink", values.zaloLink);
-    formData.append("file", values?.file?.[0] ?? null);
-
-    const response = await axios({
+    const response = await sendRequest<TResponse<TSetting[]>>({
       method: "PUT",
-      url: `/api/v1/settings`,
-      data: formData,
+      url: `/blog-api/settings`,
+      body: values,
       headers: {
-        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${(session as Session).accessToken}`,
       },
+      typeComponent: "CSR",
     });
-    if (response.data.statusCode === 200) {
+    if (response.statusCode === 200) {
       toast.success(`Updated successful`);
     } else {
       toast.error(`Server Error...`);
@@ -172,7 +157,7 @@ const SettingForm = () => {
 
               <div>
                 <label htmlFor="description" className="font-bold">
-                  Description
+                  Description for website
                 </label>
 
                 <Controller
@@ -196,33 +181,34 @@ const SettingForm = () => {
                 />
               </div>
 
-              <div className="grid w-full max-w-sm items-center gap-1.5">
-                <label htmlFor="file" className="font-bold">
-                  Logo
+              <div>
+                <label htmlFor="email" className="font-bold">
+                  Email Admin
                 </label>
-                <input
-                  id="file"
-                  type="file"
-                  className="w-full rounded-lg px-3 py-2 border-2 border-gray-300 hover:border-gray-400 outline-1 outline-gray-400 transition-all duration-200 ease-in-out"
-                  {...form.register("file")}
-                />
 
-                <>
-                  <PreviewImage
-                    url={
-                      form.getValues("logo")
-                        ? `${
-                            process.env.NEXT_PUBLIC_BACKEND_STORAGE
-                          }/logo/${form.getValues("logo")}`
-                        : ""
-                    }
-                  />
-                </>
+                <Controller
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      className="w-full rounded-lg px-3 py-2 border-2 border-gray-300 hover:border-gray-400 outline-1 outline-gray-400 transition-all duration-200 ease-in-out"
+                      autoFocus
+                    />
+                  )}
+                  name="email"
+                  control={form.control}
+                />
+                <ErrorMessage
+                  errors={form.formState.errors}
+                  name="email"
+                  render={({ message }) => (
+                    <p className="text-red-500 text-sm">{message}</p>
+                  )}
+                />
               </div>
 
               <div>
                 <label htmlFor="name" className="font-bold">
-                  Facebook link
+                  Personal Facebook link
                 </label>
 
                 <Controller
@@ -246,7 +232,7 @@ const SettingForm = () => {
               </div>
               <div>
                 <label htmlFor="name" className="font-bold">
-                  Messenger link
+                  Personal Messenger link
                 </label>
 
                 <Controller
@@ -319,8 +305,8 @@ const SettingForm = () => {
                 />
               </div>
               <div>
-                <label htmlFor="name" className="font-bold">
-                  Zalo Link
+                <label htmlFor="fanpageFacebookLink" className="font-bold">
+                  Fanpage Facebook Link
                 </label>
 
                 <Controller
@@ -331,12 +317,36 @@ const SettingForm = () => {
                       autoFocus
                     />
                   )}
-                  name="zaloLink"
+                  name="fanpageFacebookLink"
                   control={form.control}
                 />
                 <ErrorMessage
                   errors={form.formState.errors}
-                  name="zaloLink"
+                  name="fanpageFacebookLink"
+                  render={({ message }) => (
+                    <p className="text-red-500 text-sm">{message}</p>
+                  )}
+                />
+              </div>
+              <div>
+                <label htmlFor="name" className="font-bold">
+                  Personal or Fanpage Messenger link
+                </label>
+
+                <Controller
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      className="w-full rounded-lg px-3 py-2 border-2 border-gray-300 hover:border-gray-400 outline-1 outline-gray-400 transition-all duration-200 ease-in-out"
+                      autoFocus
+                    />
+                  )}
+                  name="messengerLink"
+                  control={form.control}
+                />
+                <ErrorMessage
+                  errors={form.formState.errors}
+                  name="messengerLink"
                   render={({ message }) => (
                     <p className="text-red-500 text-sm">{message}</p>
                   )}

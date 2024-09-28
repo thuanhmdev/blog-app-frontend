@@ -31,8 +31,9 @@ const BlogForm = ({ id }: IProps) => {
     if (id && session) {
       const fetchDataBlog = async (id: string) => {
         const result = await sendRequest<TResponse<TBlog>>({
-          url: `/api/v1/blogs/${id}`,
+          url: `/blog-api/blogs/${id}`,
           method: "GET",
+          typeComponent: "CSR",
         });
         if (result.statusCode === 200) {
           form.setValue("id", result.data.id);
@@ -108,7 +109,7 @@ const BlogForm = ({ id }: IProps) => {
 
     const response = await axios({
       method: values?.id ? "put" : "post",
-      url: `/api/v1/admin/blogs`,
+      url: `${process.env.NEXT_PUBLIC_ENDPOINT_CSR_COMPONENT}/blog-api/blogs`,
       data: formData,
       headers: {
         "Content-Type": "multipart/form-data",
@@ -181,7 +182,7 @@ const BlogForm = ({ id }: IProps) => {
               />
             </div>
             <div>
-              <label htmlFor="title" className="font-bold">
+              <label htmlFor="description" className="font-bold">
                 Short description
               </label>
 
@@ -194,7 +195,7 @@ const BlogForm = ({ id }: IProps) => {
                     autoFocus
                   />
                 )}
-                name="title"
+                name="description"
                 control={form.control}
               />
               <ErrorMessage
@@ -208,6 +209,7 @@ const BlogForm = ({ id }: IProps) => {
             <div>
               <label htmlFor="keywordTag" className="font-bold">
                 Keyword SEO
+                <span className="text-red-500">*</span>
               </label>
               <KeywordFieldArray />
               <ErrorMessage
@@ -235,7 +237,7 @@ const BlogForm = ({ id }: IProps) => {
                   url={
                     form.getValues("image")
                       ? `${
-                          process.env.NEXT_PUBLIC_BACKEND_STORAGE
+                          process.env.NEXT_PUBLIC_ENDPOINT_STORAGE
                         }/blog/${form.getValues("image")}`
                       : ""
                   }

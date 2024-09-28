@@ -18,17 +18,17 @@ const InformationAdd = () => {
 
   const fetchUserById = async () => {
     const result = await sendRequest<TResponse<TUser>>({
-      url: `/api/v1/users/${session?.user.id}`,
+      url: `/blog-api/users/${session?.user.id}`,
       method: "GET",
       headers: {
         Authorization: `Bearer ${session?.accessToken}`,
       },
+      typeComponent: "CSR",
     });
     if (result.statusCode <= 299 && result.data) {
       form.setValue("id", result.data.id);
       form.setValue("name", result.data.name);
       form.setValue("picture", result.data.picture ?? "");
-      form.setValue("email", result.data?.email ?? "");
     }
     setLoading(false);
   };
@@ -43,7 +43,6 @@ const InformationAdd = () => {
     name: z.string().min(1, { message: "This field is required" }),
     file: z.any().optional(),
     picture: z.string(),
-    email: z.string(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -52,7 +51,6 @@ const InformationAdd = () => {
       id: "",
       name: "",
       picture: "",
-      email: "",
       file: null,
     },
   });
@@ -61,20 +59,19 @@ const InformationAdd = () => {
     const formData = new FormData();
     formData.append("id", values.id);
     formData.append("name", values.name);
-    formData.append("picture", values.picture ?? "");
-    formData.append("email", values.email);
+    formData.append("picture", values.picture);
     formData.append("file", values?.file?.[0] ?? null);
 
     const response = await axios({
       method: "PUT",
-      url: `/api/v1/users`,
+      url: `${process.env.NEXT_PUBLIC_ENDPOINT_CSR_COMPONENT}/blog-api/users`,
       data: formData,
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${(session as Session).accessToken}`,
       },
     });
-    console.log(response);
+
     if (response.data.statusCode === 200) {
       toast.success(`Updated successful`);
     } else {
@@ -120,31 +117,6 @@ const InformationAdd = () => {
                 <ErrorMessage
                   errors={form.formState.errors}
                   name="name"
-                  render={({ message }) => (
-                    <p className="text-red-500 text-sm">{message}</p>
-                  )}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="font-bold">
-                  Email
-                </label>
-
-                <Controller
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      className="w-full rounded-lg px-3 py-2 border-2 border-gray-300 hover:border-gray-400 outline-1 outline-gray-400 transition-all duration-200 ease-in-out"
-                      autoFocus
-                    />
-                  )}
-                  name="email"
-                  control={form.control}
-                />
-                <ErrorMessage
-                  errors={form.formState.errors}
-                  name="email"
                   render={({ message }) => (
                     <p className="text-red-500 text-sm">{message}</p>
                   )}

@@ -1,9 +1,9 @@
 "use client";
-import DateFormat from "@/components/date-format";
+import Avatar from "@/components/avatar";
 import { sendRequest } from "@/http/http";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -14,17 +14,20 @@ const Comment = ({ blogId }: { blogId: string }) => {
   const [writeAnswerComment, setWriteAnswerComment] = useState({
     content: "",
     rootId: "",
-    replyToUserId: "",
+    replyToUser: {
+      id: "",
+    },
   });
   const { data: session } = useSession();
 
   const handleGetComments = async () => {
     if (!blogId) return;
     const { statusCode, data } = await sendRequest<TResponse<TComment[]>>({
-      url: `/api/v1/blogs/comments/${blogId}`,
+      url: `/blog-api/blogs/comments/${blogId}`,
       method: "GET",
+      typeComponent: "CSR",
     });
-    console.log(data);
+
     if (statusCode >= 200 && statusCode <= 299 && data) {
       const listParent = data.filter((i: TComment) => !i.rootId);
       const finalList = listParent.map((item: TComment) => {
@@ -43,38 +46,49 @@ const Comment = ({ blogId }: { blogId: string }) => {
     handleGetComments();
   }, [blogId]);
 
-  const handleWriteComment = async ({
-    content = "",
-
-    replyToUserId = "",
-  }) => {
-    if (!content) return;
+  const handleWriteComment = async () => {
+    if (!writeAnswerComment.content) return;
 
     const { statusCode, data } = await sendRequest<TResponse<TComment[]>>({
-      url: `/api/v1/blogs/comments`,
+      url: `/blog-api/blogs/comments`,
       method: "POST",
       body: {
-        content: content,
+        content: writeAnswerComment.content,
         blog: { id: blogId },
         user: { id: session?.user.id },
         rootId: writeAnswerComment.rootId ?? "",
-        replyToUser: { id: writeAnswerComment.replyToUserId ?? "" },
+        replyToUser: writeAnswerComment.replyToUser,
       },
+      typeComponent: "CSR",
     });
     if (statusCode === 201) {
       toast.success("Gửi bình luận thành công");
       handleGetComments();
       setWriteComment("");
-      setWriteAnswerComment({ content: "", rootId: "", replyToUserId: "" });
+      setWriteAnswerComment({
+        content: "",
+        rootId: "",
+        replyToUser: { id: "" },
+      });
     }
   };
-  console.log(session);
+  const handleSignOut = () => {
+    signOut({ callbackUrl: "" });
+    sendRequest<TResponse<TBlog[]>>({
+      url: `/blog-api/auth/logout`,
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session?.accessToken}`,
+      },
+      typeComponent: "CSR",
+    });
+  };
+
   return (
     <>
       <div className="pt-3 bg-white rounded space-y-2">
         <h2 className="text-xl font-bold">Bình luận</h2>
-        {session?.error}
-        {!session?.error && (
+        {!session && (
           <div className="w-full py-8 flex flex-col justify-center items-center bg-slate-50">
             <i className="text-center py-2">
               Đăng nhập để thảo luận bài viết này
@@ -96,36 +110,24 @@ const Comment = ({ blogId }: { blogId: string }) => {
                   />
                 </div>
               </li>
-              <li>
-                <div
-                  className="cursor-pointer"
-                  onClick={() => signIn("facebook")}
-                >
-                  <Image
-                    width={25}
-                    height={25}
-                    src={"/images/facebook.svg"}
-                    alt="facebook"
-                    className="hover:scale-[1.1] transition-all ease-in-out duration-250"
-                  />
-                </div>
-              </li>
             </ul>
           </div>
         )}
 
         {session && (
           <div>
-            <div className="flex items-center gap-x-2 py-2">
-              <div
-                className="rounded-full  bg-center bg-no-repeat bg-cover w-[40px] h-[40px] md:w-[40px] md:h-[40px] xl:w-[48px] xl:h-[48px]"
-                style={{
-                  backgroundImage: `url(${session.user.picture})`,
-                }}
-              ></div>
-              <p className="text-blue-500 font-semibold text-xs md:text-sm xl:text-base">
-                {session?.user?.name ?? "Khách"}
-              </p>
+            <div className="flex items-center justify-between gap-x-2 py-2">
+              <Avatar
+                picture={session.user.picture}
+                name={session.user.name}
+                role={session.user.role.name}
+              />
+              <button
+                onClick={() => handleSignOut()}
+                className="text-sm text-red-400 border-[1px] px-2 rounded-md hover:text-white hover:bg-red-400 transition-all duration-100"
+              >
+                Đăng xuất
+              </button>
             </div>
             <textarea
               className="border focus:outline-blue-200 p-2 rounded w-full"
@@ -136,7 +138,7 @@ const Comment = ({ blogId }: { blogId: string }) => {
 
             <div>
               <button
-                onClick={() => handleWriteComment({ content: writeComment })}
+                onClick={handleWriteComment}
                 className="px-4 py-1.5 bg-blue-500 text-white rounded font-light hover:bg-blue-700"
               >
                 Gửi
@@ -149,20 +151,13 @@ const Comment = ({ blogId }: { blogId: string }) => {
         <div>
           {comments.map((item: TComment) => (
             <div key={item.id} className="py-4">
-              <div className="flex items-center gap-x-2 pt-2">
-                <div
-                  className="rounded-full  bg-center bg-no-repeat bg-cover w-[40px] h-[40px] md:w-[40px] md:h-[40px] xl:w-[48px] xl:h-[48px]"
-                  style={{
-                    backgroundImage: `url(${item.user.picture})`,
-                  }}
-                ></div>
-                <div>
-                  <p className="text-blue-500 font-semibold text-xs md:text-sm xl:text-base">
-                    {item?.user?.name ?? "Khách"}
-                  </p>
-                  <DateFormat date={item.createdAt} />
-                </div>
-              </div>
+              <Avatar
+                picture={item.user.picture}
+                name={item.user.name}
+                date={item.createdAt}
+                role={item.user.role.name}
+              />
+
               <div className="ml-[55px] ">
                 <p className="bg-gray-50 p-2 ">{item.content}</p>
               </div>
@@ -176,7 +171,10 @@ const Comment = ({ blogId }: { blogId: string }) => {
                         ...prev,
                         rootId: item.id,
                         userId: session.user.id,
-                        content: "",
+                        content: `(@${item.user.name}): `,
+                        replyToUser: {
+                          id: item.user.id,
+                        },
                       }))
                     }
                   >
@@ -186,20 +184,12 @@ const Comment = ({ blogId }: { blogId: string }) => {
               </div>
               {item.answers.map((item2: TComment) => (
                 <div key={item2.id} className="ml-[55px]">
-                  <div className="flex items-center gap-x-2 pt-2">
-                    <div
-                      className="rounded-full  bg-center bg-no-repeat bg-cover w-[40px] h-[40px] md:w-[40px] md:h-[40px] xl:w-[48px] xl:h-[48px]"
-                      style={{
-                        backgroundImage: `url(${item2.user.picture})`,
-                      }}
-                    ></div>
-                    <div>
-                      <p className="text-blue-500 font-semibold text-xs md:text-sm xl:text-base">
-                        {item2?.user?.name ?? "Khách"}
-                      </p>
-                      <DateFormat date={item2.createdAt} />
-                    </div>
-                  </div>
+                  <Avatar
+                    picture={item2.user.picture}
+                    name={item2.user.name}
+                    date={item2.createdAt}
+                    role={item2.user.name}
+                  />
                   <div className="ml-[55px] ">
                     <p className="bg-gray-50 p-2 ">{item2.content}</p>
                   </div>
@@ -214,7 +204,9 @@ const Comment = ({ blogId }: { blogId: string }) => {
                             rootId: item.id,
                             userId: session.user.id,
                             content: `(@${item2.user.name}): `,
-                            replyToUserId: item2.user.id,
+                            replyToUser: {
+                              id: item2.user.id,
+                            },
                           }))
                         }
                       >
@@ -253,11 +245,7 @@ const Comment = ({ blogId }: { blogId: string }) => {
                   <div>
                     <button
                       className="px-4 py-1.5 bg-blue-500 text-white rounded font-light hover:bg-blue-700"
-                      onClick={() =>
-                        handleWriteComment({
-                          content: writeAnswerComment.content,
-                        })
-                      }
+                      onClick={handleWriteComment}
                     >
                       Gửi
                     </button>

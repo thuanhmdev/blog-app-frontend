@@ -37,13 +37,14 @@ function CommentTable() {
   });
 
   const handleFetchComment = async () => {
-    let url = `/api/v1/blogs/comments`;
+    let url = `/blog-api/blogs/comments`;
     if (id) {
-      url = `/api/v1/blogs/comments/${id}`;
+      url = `/blog-api/blogs/comments/${id}`;
     }
     const result = await sendRequest<TResponse<TComment[]>>({
       url: url,
       method: "GET",
+      typeComponent: "CSR",
     });
     if (result.statusCode <= 299 && result.data) {
       setComments(result.data);
@@ -66,11 +67,12 @@ function CommentTable() {
 
   const handleAcceptDelete = async () => {
     const result = await sendRequest<any>({
-      url: `/api/v1/blogs/comments/${rowId}`,
+      url: `/blog-api/blogs/comments/${rowId}`,
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${session?.accessToken}`,
       },
+      typeComponent: "CSR",
     });
 
     if (result.statusCode <= 299) {

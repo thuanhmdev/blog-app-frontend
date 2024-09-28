@@ -5,8 +5,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
-
 import Slider, { Settings } from "react-slick";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
+import "dayjs/locale/vi";
 
 const PrevArrow = (props: any) => {
   const { onClick } = props;
@@ -61,12 +63,13 @@ const BlogCarousel = ({ blogs = [] }: IProps) => {
     <div className="overflow-hidden rounded-lg">
       {blogs.length === 1 ? (
         <div>
-          <div
-            // style={{
-            //   backgroundImage: `url(/images/blog_default.png)`,
-            // }}
-            className="relative w-full h-[300px] p-2  bg-center bg-no-repeat bg-cover"
-          >
+          <div className="relative w-full h-[300px] p-2  bg-center bg-no-repeat bg-cover">
+            <Image
+              src="/images/blog_caurousel.jpg"
+              alt="Blog Image"
+              fill
+              className="object-cover"
+            />
             <div className="absolute inset-0 bg-neutral-800/45"></div>
             <div className="relative z-1 h-full flex flex-col justify-center items-center gap-y-3 ">
               <h3
@@ -77,10 +80,10 @@ const BlogCarousel = ({ blogs = [] }: IProps) => {
               </h3>
               <div className="flex flex-col items-center gap-y-2">
                 <p className="mb-0 text-white">
-                  {blogs?.[0].blogger.name ?? ""}
-                </p>
-                <p className="mb-0 text-white">
-                  Ngày đăng: {convertTimeStampeToDate(blogs?.[0].createdAt)}
+                  Ngày đăng:{" "}
+                  {`${dayjs(blogs?.[0].createdAt)
+                    .locale("vi")
+                    .format("DD/MM/YYYY h:mm A")}`}
                 </p>
               </div>
             </div>

@@ -7,13 +7,14 @@ const AuthAdmin = () => {
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (session?.error === "AdminRefreshAccessTokenError") {
+    if (session?.error === "RefreshAccessTokenError") {
       sendRequest<TResponse<TBlog[]>>({
-        url: `/api/v1/auth/logout`,
+        url: `/blog-api/auth/logout`,
         method: "GET",
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
         },
+        typeComponent: "CSR",
       });
       signOut({ callbackUrl: "/admin/login" });
     }

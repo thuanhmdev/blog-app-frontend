@@ -6,7 +6,7 @@ import LoginForm from "./login-form";
 
 const AdminLogin = async () => {
   const session = await getServerSession(authOptions);
-  if (session && session.user.typeRole === "ADMIN") {
+  if (session && session.user.role.name === "ADMIN") {
     redirect("/admin/blog");
   }
   return (

@@ -1,4 +1,5 @@
 "use client";
+import { sendRequest } from "@/http/http";
 import {
   LogOut,
   MessageSquareMore,
@@ -12,6 +13,20 @@ import { usePathname } from "next/navigation";
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const { data: session } = useSession();
+
+  const handleSignOut = () => {
+    signOut({ callbackUrl: "" });
+    sendRequest<TResponse<TBlog[]>>({
+      url: `/blog-api/auth/logout`,
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session?.accessToken}`,
+      },
+      typeComponent: "CSR",
+    });
+  };
+
   // const router = useRouter();
   const menuItems = [
     {
@@ -67,7 +82,7 @@ const Sidebar = () => {
         </Link>
         <div
           className="p-2 flex items-center hover:bg-slate-600 hover:rounded-xl cursor-pointer"
-          onClick={() => signOut({ callbackUrl: "/admin/login" })}
+          onClick={handleSignOut}
         >
           <LogOut className="text-xl" />
           <p className="ms-3 md:text-sm lg:text-base font-semibold">Logout</p>

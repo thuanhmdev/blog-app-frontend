@@ -13,6 +13,5 @@ export const convertURL = (url: string) => {
 
 export const getIdFromSlug = (slug: string) => {
   if (!slug) return "";
-  console.log(slug.split("-uuid-").reverse()?.[0]);
   return slug.split("-uuid-").reverse()?.[0];
 };

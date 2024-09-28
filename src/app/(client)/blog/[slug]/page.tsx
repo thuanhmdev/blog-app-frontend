@@ -7,6 +7,7 @@ import DateFormat from "@/components/date-format";
 import { Metadata, ResolvingMetadata } from "next";
 import { convertURL, getIdFromSlug } from "@/utils/urlUtil";
 import ShareSocialMedia from "@/components/share-social-media";
+import Avatar from "@/components/avatar";
 
 interface TProps {
   params: {
@@ -14,74 +15,71 @@ interface TProps {
   };
 }
 
-// export async function generateMetadata(
-//   { params }: TProps,
-//   parent: ResolvingMetadata
-// ): Promise<Metadata> {
-//   const { statusCode, data } = await sendRequest<TResponse<TBlog>>({
-//     url: `/api/v1/blogs/${getIdFromSlug(
-//       params.slug
-//     )}}`,
-//     method: "GET",
-//   });
+export async function generateMetadata(
+  { params }: TProps,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { statusCode, data } = await sendRequest<TResponse<TBlog>>({
+    url: `/blog-api/blogs/${getIdFromSlug(params.slug)}`,
+    method: "GET",
+  });
 
-//   const siteName = (await parent).openGraph?.siteName;
-//   const locale = (await parent).openGraph?.locale;
+  const siteName = (await parent).openGraph?.siteName;
+  const locale = (await parent).openGraph?.locale;
 
-//   if (statusCode === 200) {
-//     return {
-//       title: data.title,
-//       description: data.description,
-//       keywords: data?.keyword ? data.keyword.split(",") : [],
-//       // alternates: {
-//       //   canonical: `./blog/${data.title}`,
-//       // },
-//       openGraph: {
-//         title: data.title,
-//         description: data.description,
-//         type: "article",
-//         authors: [`${data.blogger.name}`],
-//         locale: locale,
-//         tags: data?.keyword ? data.keyword.split(",") : [],
-//         siteName: siteName,
-//         images: [
-//           `${
-//             data.image
-//               ? `${process.env.NEXT_PUBLIC_BACKEND_STORAGE}/blog/${data.image}`
-//               : "/images/default_blog.jpg"
-//           }`,
-//         ],
-//       },
-//       twitter: {
-//         card: "summary_large_image",
-//         title: data.title,
-//         description: data.description,
-//         creator: data.blogger.name,
-//         images: [
-//           `${process.env.NEXT_PUBLIC_BACKEND_STORAGE}/blog/${data.image}`,
-//         ],
-//       },
-//     };
-//   }
-//   return {
-//     title: "Blog not found",
-//     description: "",
-//     openGraph: {
-//       title: "Blog not found",
-//       description: "",
-//       images: ["/images/no-result.gif"],
-//     },
-//   };
-// }
+  if (statusCode === 200) {
+    return {
+      title: data.title,
+      description: data.description,
+      keywords: data?.keyword ? data.keyword.split(",") : [],
+
+      openGraph: {
+        title: data.title,
+        description: data.description,
+        type: "article",
+        authors: [`${data.blogger.name}`],
+        locale: locale,
+        tags: data?.keyword ? data.keyword.split(",") : [],
+        siteName: siteName,
+        images: [
+          `${
+            data.image
+              ? `${process.env.NEXT_PUBLIC_BACKEND_STORAGE}/blog/${data.image}`
+              : "/images/default_blog.jpg"
+          }`,
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: data.title,
+        description: data.description,
+        creator: data.blogger.name,
+        images: [
+          `${process.env.NEXT_PUBLIC_BACKEND_STORAGE}/blog/${data.image}`,
+        ],
+      },
+    };
+  } else {
+    return {
+      title: "Blog not found",
+      description: "",
+      openGraph: {
+        title: "Blog not found",
+        description: "",
+        images: ["/images/no-result.gif"],
+      },
+    };
+  }
+}
 
 const page = async ({ params }: any) => {
   const [blog, topBlogs] = await Promise.all([
     sendRequest<TResponse<TBlog>>({
-      url: `/api/v1/blogs/${getIdFromSlug(params.slug)}`,
+      url: `/blog-api/blogs/${getIdFromSlug(params.slug)}`,
       method: "GET",
     }),
     sendRequest<TResponse<TBlog[]>>({
-      url: `/api/v1/blogs/recent`,
+      url: `/blog-api/blogs/recent`,
       method: "GET",
     }),
   ]);
@@ -96,19 +94,10 @@ const page = async ({ params }: any) => {
                 {blog?.data.title}
               </h1>
               <div className="flex items-center pt-5 justify-between mb-1">
-                <div className="flex items-center gap-x-2">
-                  <div className="rounded-full relative overflow-hidden  bg-center bg-no-repeat bg-cover w-[40px] h-[40px] md:w-[40px] md:h-[40px] xl:w-[48px] xl:h-[48px]">
-                    <Image
-                      src={blog.data.blogger.picture}
-                      alt="avatar"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <p className="text-blue-500 font-semibold text-xs md:text-sm xl:text-base">
-                    {blog.data.blogger.name}
-                  </p>
-                </div>
+                <Avatar
+                  picture={blog.data.blogger.picture}
+                  name={blog.data.blogger.name}
+                />
                 <p className="text-xs block md:inline">
                   Ngày đăng: <DateFormat date={blog.data.createdAt} />
                 </p>
@@ -129,11 +118,23 @@ const page = async ({ params }: any) => {
                   {topBlogs.data.map((item) => (
                     <li key={item.id}>
                       <Link
-                        href={`blog/${convertURL(item.title)}-uuid-${item.id}`}
+                        href={`/${convertURL(item.title)}-uuid-${item.id}`}
                         className="flex gap-4 cursor-pointer transition duration-300 hover:-translate-y-[2px]  hover:scale-[101%] hover:shadow-md"
                       >
                         <div className="">
-                          <div className="child group-hover:scale(1.2) bg-[url('/images/01.jpg')] bg-center bg-cover bg-no-repeat  h-[120px] w-[160px] rounded-2xl"></div>
+                          <div className="h-[120px] w-[160px] rounded-2xl overflow-hidden relative">
+                            <Image
+                              src={
+                                item.image
+                                  ? `${process.env.NEXT_PUBLIC_ENDPOINT_STORAGE}${item.image}`
+                                  : "/images/default_blog.jpg"
+                              }
+                              alt="Blog Image"
+                              sizes="160px"
+                              fill
+                              objectFit="cover"
+                            />
+                          </div>
                         </div>
                         <div className="py-2 flex flex-col gap-y-1.5 lg:gap-y-2.5">
                           <h2 className="md:text-base text-xl font-bold">

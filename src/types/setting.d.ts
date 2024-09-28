@@ -6,13 +6,11 @@ declare global {
     description: string;
     email: string;
     siteName: string;
-    logo: string;
     facebookLink: string;
     messengerLink: string;
-    zaloLink: string;
+    fanpageFacebookLink: string;
     xLink: string;
     instagramLink: string;
-    zaloLink: string;
     siteName: string;
   };
 
@@ -20,11 +18,9 @@ declare global {
     email: string;
     facebookLink: string;
     messengerLink: string;
-    zaloLink: string;
     xLink: string;
     instagramLink: string;
-    zaloLink: string;
+    fanpageFacebookLink: string;
     name: string;
-    picture: string;
   };
 }

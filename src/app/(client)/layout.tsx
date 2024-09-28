@@ -4,10 +4,11 @@ import { sendRequest } from "@/http/http";
 import { Metadata } from "next";
 import React from "react";
 import AuthUser from "./auth-user";
+import MessengerPlugin from "@/components/messenger-plugin";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data, statusCode } = await sendRequest<TResponse<TSetting>>({
-    url: `/api/v1/settings`,
+    url: `/blog-api/settings`,
     method: "GET",
   });
   if (statusCode === 200) {
@@ -44,6 +45,7 @@ const ClientLayout = ({
     <>
       <Header />
       <AuthUser />
+      <MessengerPlugin />
       <div className="min-h-[90vh]">{children}</div>
       <Footer />
     </>

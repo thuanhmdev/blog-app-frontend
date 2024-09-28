@@ -27,7 +27,7 @@ const ShareSocialMedia = ({ title }: Iprops) => {
         <FacebookShareButton url={url} quote={title}>
           <FacebookIcon size={24} round />
         </FacebookShareButton>
-        <FacebookMessengerShareButton url={url} appId={""}>
+        <FacebookMessengerShareButton url={url} appId={"526164413408334"}>
           <FacebookMessengerIcon size={24} round />
         </FacebookMessengerShareButton>
         <TelegramShareButton url={url}>

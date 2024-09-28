@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const Header = async () => {
   const setting = await sendRequest<TResponse<TSetting>>({
-    url: `/api/v1/settings`,
+    url: `/blog-api/settings`,
     method: "GET",
   });
   return (
@@ -12,16 +12,13 @@ const Header = async () => {
       <header className="sticky top-0 z-[11] bg-white shadow-md py-2.5">
         <div className="container flex justify-between items-center h-full">
           <Link href="/" className="relative">
-            <div className="h-[60px] w-[120px]">
+            <div className="h-[60px] w-[120px] relative">
               <Image
                 className="object-contain object-left"
                 alt="Logo"
-                src={`${
-                  setting.data.logo
-                    ? `${process.env.NEXT_PUBLIC_BACKEND_STORAGE}/logo/${setting.data.logo}`
-                    : "/images/logo.png"
-                }`}
+                src={"/images/logo.png"}
                 fill
+                sizes="120px"
                 priority
                 quality={100}
               />
@@ -51,12 +48,12 @@ const Header = async () => {
               </Link>
             </li>
             <li>
-              <Link href={setting.data.zaloLink ?? "#"}>
+              <Link href={setting.data.xLink ?? "#"}>
                 <Image
                   width={25}
                   height={25}
-                  src={"/images/zalo.svg"}
-                  alt="zalo"
+                  src={"/images/x.svg"}
+                  alt="x"
                   className="hover:scale-[1.1] transition-all ease-in-out duration-250"
                 />
               </Link>

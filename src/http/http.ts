@@ -10,7 +10,13 @@ export const sendRequest = async <T>(props: TRequest) => {
     useCredentials = false,
     headers = {},
     nextOption = {},
+    typeComponent = "SSR",
   } = props;
+
+  let host = process.env.NEXT_PUBLIC_ENDPOINT_SSR_COMPONENT;
+  if (typeComponent === "CSR") {
+    host = process.env.NEXT_PUBLIC_ENDPOINT_CSR_COMPONENT ?? "";
+  }
 
   const options: any = {
     method: method,
@@ -22,12 +28,10 @@ export const sendRequest = async <T>(props: TRequest) => {
   if (useCredentials) options.credentials = "include";
 
   if (queryParams) {
-    url = `${process.env.NEXT_PUBLIC_BACKEND_URL}${url}?${queryString.stringify(
-      queryParams
-    )}`;
+    url = `${url}?${queryString.stringify(queryParams)}`;
   }
 
-  return fetch(url, options).then((res) => {
+  return fetch(`${host}${url}`, options).then((res) => {
     if (res.ok) {
       return res.json() as T; //generic
     } else {

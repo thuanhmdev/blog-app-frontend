@@ -11,7 +11,7 @@ const refreshAccessToken = async (token: JWT) => {
   const { statusCode, message, error, data } = await sendRequest<
     TResponse<TResponseUserLogin>
   >({
-    url: `/api/v1/admin/auth/refresh`,
+    url: `/blog-api/auth/refresh`,
     method: "POST",
     body: { refreshToken: token?.refreshToken },
   });
@@ -27,10 +27,7 @@ const refreshAccessToken = async (token: JWT) => {
   } else {
     return {
       ...token,
-      error:
-        token.user.typeRole === "ADMIN"
-          ? "AdminRefreshAccessTokenError"
-          : "UserRefreshAccessTokenError", // This is used in the front-end, and if present, we can force a re-login, or similar
+      error: "refreshAccessTokenError",
     };
   }
 };
@@ -47,7 +44,7 @@ export const authOptions: AuthOptions = {
       async authorize(credentials, req) {
         // Add logic here to look up the user from the credentials supplied
         const res = await sendRequest<TResponse<JWT>>({
-          url: `/api/v1/admin/auth/login`,
+          url: `/blog-api/admin/auth/login`,
           method: "POST",
           body: {
             username: credentials?.username,
@@ -79,7 +76,7 @@ export const authOptions: AuthOptions = {
     async jwt({ token, trigger, account, user, session }) {
       if (trigger === "signIn" && account?.provider !== "credentials") {
         const res = await sendRequest<TResponse<TResponseUserLogin>>({
-          url: `/api/v1/auth/social-media`,
+          url: `/blog-api/auth/social-media`,
           method: "POST",
           body: {
             provider: account?.provider?.toLocaleUpperCase(),
@@ -113,8 +110,11 @@ export const authOptions: AuthOptions = {
           accessExpireToken: decodedJWT.exp,
         };
       }
-      console.log(token.accessExpireToken);
-      if (Date.now() > (token.accessExpireToken as number)) {
+      console.log("accessExpireToken: ", token.accessExpireToken);
+      if (
+        token.accessExpireToken &&
+        Date.now() > (token.accessExpireToken as number)
+      ) {
         return refreshAccessToken(token);
       }
       return token;
@@ -134,6 +134,6 @@ export const authOptions: AuthOptions = {
   },
   pages: {
     signIn: "/admin/login",
-    signOut: "/auth/logout",
+    // signOut: "/auth/logout",
   },
 };

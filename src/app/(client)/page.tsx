@@ -9,29 +9,26 @@ import { Suspense } from "react";
 import { authOptions } from "../api/auth/auth.option";
 import Image from "next/image";
 import { convertURL } from "@/utils/urlUtil";
+import Avatar from "@/components/avatar";
+import FanpageFacebook from "@/components/fanpage-facebook";
 
 const HomePage = async ({
   searchParams,
 }: {
   searchParams: { page?: string };
 }) => {
-  const session = await getServerSession(authOptions);
-  const [topBlogs, blogs, contact] = await Promise.all([
+  const [topBlogs, blogs] = await Promise.all([
     sendRequest<TResponse<TBlog[]>>({
-      url: `/api/v1/blogs/carousel`,
+      url: `/blog-api/blogs/carousel`,
       method: "GET",
     }),
     sendRequest<TResponse<TPagination<TBlog[]>>>({
-      url: `/api/v1/blogs-pagination`,
+      url: `/blog-api/blogs-pagination`,
       method: "GET",
       queryParams: {
         size: 10,
         page: searchParams?.page ?? "1",
       },
-    }),
-    sendRequest<TResponse<TContact>>({
-      url: `/api/v1/settings/contact`,
-      method: "GET",
     }),
   ]);
 
@@ -39,14 +36,13 @@ const HomePage = async ({
     <div>
       <div className="container py-3">
         <h1 className="hidden">Kim Tuyền Blog</h1>
-
         <div>
           {topBlogs?.data?.length > 0 && (
             <BlogCarousel blogs={topBlogs?.data} />
           )}
           <div className="relative">
             <div className="grid grid-cols-12 gap-x-10 ">
-              <div className="col-span-12 lg:col-span-9 space-y-4 lg:space-y-6">
+              <div className="col-span-12 2xl:col-span-9 space-y-4 2xl:space-y-6">
                 <h2 className="text-xl lg:text-2xl xl:text-3xl font-bold mb-0 mt-4 lg:mt-8">
                   Danh sách bài viết
                 </h2>
@@ -59,15 +55,19 @@ const HomePage = async ({
                     >
                       <div className="">
                         <div className="child relative group-hover:scale(1.2) bg-center bg-cover bg-no-repeat w-[160px] h-[150px] md:w-[220px] md:h-[200px] lg:w-[260px] lg:h-[220px] xl:w-[290px] xl:h-[230px] rounded-2xl overflow-hidden">
+                          (
                           <Image
                             src={
                               item.image
-                                ? `${process.env.NEXT_PUBLIC_BACKEND_STORAGE}/blog/${item.image}`
+                                ? `${process.env.NEXT_PUBLIC_ENDPOINT_STORAGE}${item.image}`
                                 : "/images/default_blog.jpg"
                             }
                             alt="Blog Image"
+                            sizes="20vw"
                             fill
+                            objectFit="cover"
                           />
+                          )
                         </div>
                       </div>
                       <div className="py-2 flex flex-col gap-y-1.5 lg:gap-y-2.5">
@@ -75,19 +75,10 @@ const HomePage = async ({
                           {item.title}
                         </h2>
 
-                        <div className="flex flex-col">
-                          <div className="flex items-center gap-x-2">
-                            <div
-                              style={{
-                                backgroundImage: `url(${item.blogger.picture})`,
-                              }}
-                              className="rounded-full  bg-center bg-no-repeat bg-cover w-[40px] h-[40px] md:w-[40px] md:h-[40px] xl:w-[48px] xl:h-[48px]"
-                            ></div>
-                            <p className="text-blue-600 font-semibold text-xs md:text-sm xl:text-base">
-                              {item.blogger.name}
-                            </p>
-                          </div>
-                        </div>
+                        <Avatar
+                          picture={item.blogger.picture}
+                          name={item.blogger.name}
+                        />
                         <p className="text-xs block md:inline">
                           Ngày đăng: <DateFormat date={item.createdAt} />
                         </p>
@@ -102,46 +93,9 @@ const HomePage = async ({
                   <BlogListPagination total={blogs.data.meta.total} />
                 </Suspense>
               </div>
-              <div className="hidden mt-10 lg:block lg:col-span-3 space-y-4 lg:space-y-6">
-                <div className="sticky top-[150px] space-y-4">
-                  <div className="relative rounded-lg  bg-center bg-no-repeat bg-cover w-[40px] h-[40px] md:w-[40px] md:h-[40px] xl:w-full xl:h-[350px]">
-                    <Image
-                      src={contact?.data?.picture ?? ""}
-                      alt="Blog Image"
-                      fill
-                      className="object-cover"
-                    />
-                    <p className="absolute font-bold bottom-0 bg-gray-600/50 text-neutral-50 px-2 text-center py-1 w-full">
-                      {contact.data.name ?? "Admin"}
-                    </p>
-                  </div>
-
-                  <ul className="space-y-1">
-                    <li>
-                      <Link
-                        href={contact?.data?.facebookLink ?? "#"}
-                        className="block text-center bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600/80 hover:scale-[101%] transition duration-100"
-                      >
-                        Facebook
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href={contact?.data?.instagramLink ?? "#"}
-                        className="block text-center bg-orange-500 text-white py-2 rounded-md hover:bg-blue-600/80 hover:scale-[101%] transition duration-100"
-                      >
-                        Instagram
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href={contact?.data?.zaloLink ?? "#"}
-                        className="block text-center bg-sky-500 text-white py-2 rounded-md hover:bg-blue-600/80 hover:scale-[101%] transition duration-100"
-                      >
-                        Zalo
-                      </Link>
-                    </li>
-                  </ul>
+              <div className="hidden mt-10 2xl:block xl:col-span-3 space-y-4 2xl:space-y-6">
+                <div className="sticky top-[150px]">
+                  <FanpageFacebook />
                 </div>
               </div>
             </div>

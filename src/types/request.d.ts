@@ -9,5 +9,6 @@ declare global {
     useCredentials?: boolean;
     headers?: any;
     nextOption?: any;
+    typeComponent?: "SSR" | "CSR";
   };
 }
