@@ -8,7 +8,6 @@ interface IAvatar {
 }
 
 const Avatar = ({ user, date = 0 }: IAvatar) => {
-  console.log(user);
   return (
     <>
       <div className="flex items-center gap-x-2 py-2">
