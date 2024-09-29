@@ -110,7 +110,6 @@ export const authOptions: AuthOptions = {
           accessExpireToken: decodedJWT.exp,
         };
       }
-      console.log("accessExpireToken: ", token.accessExpireToken);
       if (
         token.accessExpireToken &&
         Date.now() > (token.accessExpireToken as number)
