@@ -4,7 +4,7 @@ declare global {
     id: string;
     title: string;
     content: string;
-    image: string | null;
+    image: string;
     description: string;
     keyword: string;
     blogger: TUser;

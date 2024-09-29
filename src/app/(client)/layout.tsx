@@ -18,6 +18,9 @@ export async function generateMetadata(): Promise<Metadata> {
       openGraph: {
         siteName: data.siteName,
         locale: "vi_VN",
+        images: [
+          `${process.env.NEXT_PUBLIC_ENDPOINT_CSR_COMPONENT}/images/homepage.jpg`,
+        ],
       },
       // alternates: {
       //   canonical: "./",

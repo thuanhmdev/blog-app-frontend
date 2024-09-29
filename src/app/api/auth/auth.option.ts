@@ -82,7 +82,7 @@ export const authOptions: AuthOptions = {
             provider: account?.provider?.toLocaleUpperCase(),
             username: user.email,
             name: user.name,
-            picture: user.image,
+            imageProvider: user.image,
           },
         });
         const { data } = res;
@@ -96,7 +96,7 @@ export const authOptions: AuthOptions = {
         }
       }
 
-      if (trigger === "signIn" && account?.type === "credentials") {
+      if (trigger === "signIn" && account?.provider === "credentials") {
         //@ts-ignore
         const decodedJWT = jwtDecode(user?.accessToken);
         token = {

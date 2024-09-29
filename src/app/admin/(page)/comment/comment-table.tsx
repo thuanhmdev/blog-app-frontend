@@ -25,7 +25,6 @@ import { toast } from "react-toastify";
 function CommentTable() {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
   const { id } = useParams();
   const [comments, setComments] = useState<TComment[]>([]);
   const [rowId, setRowId] = useState<String>("");
@@ -106,7 +105,8 @@ function CommentTable() {
               className="rounded-full  bg-center bg-no-repeat bg-cover w-[40px] h-[40px] md:w-[40px] md:h-[40px] xl:w-[48px] xl:h-[48px]"
               style={{
                 backgroundImage: `url(${
-                  (row.getValue("user") as TUser)?.picture
+                  (row.getValue("user") as TUser)?.imageProvider ??
+                  (row.getValue("user") as TUser)?.image
                 })`,
               }}
             ></div>

@@ -3,19 +3,25 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-const PreviewImage = ({ url = "" }: { url: string }) => {
+const PreviewImage = () => {
   const { watch, resetField } = useFormContext();
   const [urlPreview, setUrlPreview] = useState("");
 
   useEffect(() => {
-    if (url) {
-      setUrlPreview(url);
-    }
-  }, [url]);
+    setUrlPreview(
+      watch("image")
+        ? `${process.env.NEXT_PUBLIC_ENDPOINT_STORAGE}${watch("image")}`
+        : ""
+    );
+  }, [watch("image")]);
 
   const handleRemoveFile = () => {
     resetField("file");
-    setUrlPreview(url);
+    setUrlPreview(
+      watch("image")
+        ? `${process.env.NEXT_PUBLIC_ENDPOINT_STORAGE}${watch("image")}`
+        : ""
+    );
   };
 
   useEffect(() => {

@@ -13,7 +13,8 @@ declare global {
       id: string;
       name: string;
     };
-    picture: string;
+    image: string;
+    imageProvider: string;
   };
 
   export type TLogin = {

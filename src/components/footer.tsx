@@ -13,12 +13,12 @@ const Footer = async () => {
       <footer id="footer" className="bg-gray-100 py-6">
         <div className="container flex justify-between">
           <p className="text-black text-sm text-center mt-4">
-            Copyright © {new Date().getFullYear()}, Skinlab by Tuyen
+            Copyright © {new Date().getFullYear()}, {setting.data.siteName}
           </p>
           <div className="flex justify-between">
             <ul className="flex flex-wrap items-center gap-4 m-0 text-lg lg:text-xl xl:text-2xl">
               <li>
-                <Link href={setting.data.facebookLink ?? "#"}>
+                <Link href={setting.data.facebookLink ?? "#"} target="__blank">
                   <Image
                     width={25}
                     height={25}
@@ -29,7 +29,7 @@ const Footer = async () => {
                 </Link>
               </li>
               <li>
-                <Link href={setting.data.instagramLink ?? "#"}>
+                <Link href={setting.data.instagramLink ?? "#"} target="__blank">
                   <Image
                     width={25}
                     height={25}
@@ -40,7 +40,7 @@ const Footer = async () => {
                 </Link>
               </li>
               <li>
-                <Link href={setting.data.xLink ?? "#"}>
+                <Link href={setting.data.xLink ?? "#"} target="__blank">
                   <Image
                     width={25}
                     height={25}

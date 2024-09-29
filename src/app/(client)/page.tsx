@@ -75,10 +75,7 @@ const HomePage = async ({
                           {item.title}
                         </h2>
 
-                        <Avatar
-                          picture={item.blogger.picture}
-                          name={item.blogger.name}
-                        />
+                        <Avatar user={item.blogger} />
                         <p className="text-xs block md:inline">
                           Ngày đăng: <DateFormat date={item.createdAt} />
                         </p>

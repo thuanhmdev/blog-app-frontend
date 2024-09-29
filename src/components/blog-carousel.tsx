@@ -9,6 +9,7 @@ import Slider, { Settings } from "react-slick";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 import "dayjs/locale/vi";
+import useMounted from "@/hooks/use-mounted";
 
 const PrevArrow = (props: any) => {
   const { onClick } = props;
@@ -39,6 +40,7 @@ interface IProps {
 }
 
 const BlogCarousel = ({ blogs = [] }: IProps) => {
+  const hasMounted = useMounted();
   const router = useRouter();
   const settings: Settings = {
     dots: false,
@@ -81,9 +83,7 @@ const BlogCarousel = ({ blogs = [] }: IProps) => {
               <div className="flex flex-col items-center gap-y-2">
                 <p className="mb-0 text-white">
                   Ngày đăng:{" "}
-                  {`${dayjs(blogs?.[0].createdAt)
-                    .locale("vi")
-                    .format("DD/MM/YYYY h:mm A")}`}
+                  {hasMounted && convertTimeStampeToDate(blogs?.[0].createdAt)}
                 </p>
               </div>
             </div>
@@ -114,7 +114,8 @@ const BlogCarousel = ({ blogs = [] }: IProps) => {
                         {item.blogger.name ?? ""}
                       </p>
                       <p className="mb-0 text-white">
-                        Ngày đăng: {convertTimeStampeToDate(item.createdAt)}
+                        Ngày đăng:{" "}
+                        {hasMounted && convertTimeStampeToDate(item.createdAt)}
                       </p>
                     </div>
                   </div>

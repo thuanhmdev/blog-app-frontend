@@ -28,7 +28,7 @@ const InformationAdd = () => {
     if (result.statusCode <= 299 && result.data) {
       form.setValue("id", result.data.id);
       form.setValue("name", result.data.name);
-      form.setValue("picture", result.data.picture ?? "");
+      form.setValue("image", result.data.image ?? "");
     }
     setLoading(false);
   };
@@ -42,7 +42,7 @@ const InformationAdd = () => {
     id: z.string(),
     name: z.string().min(1, { message: "This field is required" }),
     file: z.any().optional(),
-    picture: z.string(),
+    image: z.string(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -50,7 +50,7 @@ const InformationAdd = () => {
     defaultValues: {
       id: "",
       name: "",
-      picture: "",
+      image: "",
       file: null,
     },
   });
@@ -59,7 +59,7 @@ const InformationAdd = () => {
     const formData = new FormData();
     formData.append("id", values.id);
     formData.append("name", values.name);
-    formData.append("picture", values.picture);
+    formData.append("image", values.image);
     formData.append("file", values?.file?.[0] ?? null);
 
     const response = await axios({
@@ -135,7 +135,7 @@ const InformationAdd = () => {
                 />
 
                 <>
-                  <PreviewImage url={form.getValues("picture") ?? ""} />
+                  <PreviewImage />
                 </>
               </div>
 

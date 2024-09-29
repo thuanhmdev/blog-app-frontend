@@ -26,7 +26,7 @@ const Header = async () => {
           </Link>
           <ul className="flex flex-wrap items-center gap-4 m-0 text-lg lg:text-xl xl:text-2xl">
             <li>
-              <Link href={setting.data.facebookLink ?? "#"}>
+              <Link href={setting.data.facebookLink ?? "#"} target="__blank">
                 <Image
                   width={25}
                   height={25}
@@ -37,7 +37,7 @@ const Header = async () => {
               </Link>
             </li>
             <li>
-              <Link href={setting.data.instagramLink ?? "#"}>
+              <Link href={setting.data.instagramLink ?? "#"} target="__blank">
                 <Image
                   width={25}
                   height={25}
@@ -48,7 +48,7 @@ const Header = async () => {
               </Link>
             </li>
             <li>
-              <Link href={setting.data.xLink ?? "#"}>
+              <Link href={setting.data.xLink ?? "#"} target="__blank">
                 <Image
                   width={25}
                   height={25}

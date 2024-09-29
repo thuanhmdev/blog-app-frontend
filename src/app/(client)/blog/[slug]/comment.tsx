@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const Comment = ({ blogId }: { blogId: string }) => {
+const Comment = ({ blogData }: { blogData: TBlog }) => {
   // signOut();
   const [comments, setComments] = useState<TComment[]>([]);
   const [writeComment, setWriteComment] = useState("");
@@ -21,9 +21,9 @@ const Comment = ({ blogId }: { blogId: string }) => {
   const { data: session } = useSession();
 
   const handleGetComments = async () => {
-    if (!blogId) return;
+    if (!blogData.id) return;
     const { statusCode, data } = await sendRequest<TResponse<TComment[]>>({
-      url: `/blog-api/blogs/comments/${blogId}`,
+      url: `/blog-api/blogs/comments/${blogData.id}`,
       method: "GET",
       typeComponent: "CSR",
     });
@@ -44,9 +44,37 @@ const Comment = ({ blogId }: { blogId: string }) => {
 
   useEffect(() => {
     handleGetComments();
-  }, [blogId]);
+  }, [blogData]);
 
   const handleWriteComment = async () => {
+    if (!writeComment) return;
+
+    const { statusCode, data } = await sendRequest<TResponse<TComment[]>>({
+      url: `/blog-api/blogs/comments`,
+      method: "POST",
+      body: {
+        content: writeComment,
+        blog: { id: blogData.id },
+        user: { id: session?.user.id },
+        rootId: "",
+        replyToUser: { id: blogData.blogger.id },
+        urlBlog: (window as Window).location.href,
+      },
+      typeComponent: "CSR",
+    });
+    if (statusCode === 201) {
+      toast.success("Gửi bình luận thành công");
+      handleGetComments();
+      setWriteComment("");
+      setWriteAnswerComment({
+        content: "",
+        rootId: "",
+        replyToUser: { id: "" },
+      });
+    }
+  };
+
+  const handleWriteAnswerComment = async () => {
     if (!writeAnswerComment.content) return;
 
     const { statusCode, data } = await sendRequest<TResponse<TComment[]>>({
@@ -54,10 +82,11 @@ const Comment = ({ blogId }: { blogId: string }) => {
       method: "POST",
       body: {
         content: writeAnswerComment.content,
-        blog: { id: blogId },
+        blog: { id: blogData.id },
         user: { id: session?.user.id },
         rootId: writeAnswerComment.rootId ?? "",
         replyToUser: writeAnswerComment.replyToUser,
+        urlBlog: (window as Window).location.href,
       },
       typeComponent: "CSR",
     });
@@ -98,7 +127,7 @@ const Comment = ({ blogId }: { blogId: string }) => {
                 <div
                   className="cursor-pointer"
                   onClick={() =>
-                    signIn("google", { callbackUrl: `/blog/${blogId}` })
+                    signIn("google", { callbackUrl: `/blog/${blogData.id}` })
                   }
                 >
                   <Image
@@ -117,11 +146,7 @@ const Comment = ({ blogId }: { blogId: string }) => {
         {session && (
           <div>
             <div className="flex items-center justify-between gap-x-2 py-2">
-              <Avatar
-                picture={session.user.picture}
-                name={session.user.name}
-                role={session.user.role.name}
-              />
+              <Avatar user={session.user} />
               <button
                 onClick={() => handleSignOut()}
                 className="text-sm text-red-400 border-[1px] px-2 rounded-md hover:text-white hover:bg-red-400 transition-all duration-100"
@@ -151,12 +176,7 @@ const Comment = ({ blogId }: { blogId: string }) => {
         <div>
           {comments.map((item: TComment) => (
             <div key={item.id} className="py-4">
-              <Avatar
-                picture={item.user.picture}
-                name={item.user.name}
-                date={item.createdAt}
-                role={item.user.role.name}
-              />
+              <Avatar date={item.createdAt} user={item.user} />
 
               <div className="ml-[55px] ">
                 <p className="bg-gray-50 p-2 ">{item.content}</p>
@@ -184,12 +204,7 @@ const Comment = ({ blogId }: { blogId: string }) => {
               </div>
               {item.answers.map((item2: TComment) => (
                 <div key={item2.id} className="ml-[55px]">
-                  <Avatar
-                    picture={item2.user.picture}
-                    name={item2.user.name}
-                    date={item2.createdAt}
-                    role={item2.user.name}
-                  />
+                  <Avatar user={item2.user} date={item2.createdAt} />
                   <div className="ml-[55px] ">
                     <p className="bg-gray-50 p-2 ">{item2.content}</p>
                   </div>
@@ -219,17 +234,7 @@ const Comment = ({ blogId }: { blogId: string }) => {
 
               {session && writeAnswerComment.rootId === item.id && (
                 <div className="ml-[55px] ">
-                  <div className="flex items-center gap-x-2 py-2">
-                    <div
-                      className="rounded-full  bg-center bg-no-repeat bg-cover w-[40px] h-[40px] md:w-[40px] md:h-[40px] xl:w-[48px] xl:h-[48px]"
-                      style={{
-                        backgroundImage: `url(${session.user.picture})`,
-                      }}
-                    ></div>
-                    <p className="text-blue-500 font-semibold text-xs md:text-sm xl:text-base">
-                      {session?.user?.name ?? "Khách"}
-                    </p>
-                  </div>
+                  <Avatar user={session.user} />
                   <textarea
                     className="border focus:outline-blue-200 p-2 rounded w-full"
                     placeholder="Trả lời bình luận này..."
@@ -245,7 +250,7 @@ const Comment = ({ blogId }: { blogId: string }) => {
                   <div>
                     <button
                       className="px-4 py-1.5 bg-blue-500 text-white rounded font-light hover:bg-blue-700"
-                      onClick={handleWriteComment}
+                      onClick={handleWriteAnswerComment}
                     >
                       Gửi
                     </button>

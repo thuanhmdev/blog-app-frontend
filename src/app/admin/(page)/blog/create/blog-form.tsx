@@ -25,6 +25,7 @@ const BlogForm = ({ id }: IProps) => {
   const { data: session } = useSession();
 
   const [loading, setLoading] = useState(true);
+  const [blogImageUrl, setBlogImageUrl] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -50,6 +51,7 @@ const BlogForm = ({ id }: IProps) => {
               : [{ value: "" }]
           );
           form.setValue("image", result.data.image ?? "");
+          // setBlogImageUrl(result.data.image);
         } else {
           toast.error("Server Error...");
         }
@@ -238,7 +240,7 @@ const BlogForm = ({ id }: IProps) => {
                     form.getValues("image")
                       ? `${
                           process.env.NEXT_PUBLIC_ENDPOINT_STORAGE
-                        }/blog/${form.getValues("image")}`
+                        }${form.getValues("image")}`
                       : ""
                   }
                 />
